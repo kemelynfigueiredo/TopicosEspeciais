@@ -27,9 +27,30 @@ def getAlunosByID(id):
 
 @app.route("/aluno", methods=['POST'])
 def setAluno():
+
     print ('cadastrando o aluno')
 
     nome = request.form['nome']
+    matricula = request.form['matricula']
+    cpf = request.form['cpf']
+    nascimento = request.form['nascimento']
+
+    conn = sqlite3.connect('escola.db')
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+
+        INSERT INTO tb_aluno(nome, matricula, cpf, nascimento')
+        VALUES(?,?,?,?);
+
+    """, (nome, matricula, cpf, nascimento))
+
+    conn.commit()
+    conn.close()
+
+
+
     return('CADASTRADO COM SUCESSO', 200)
 
 
