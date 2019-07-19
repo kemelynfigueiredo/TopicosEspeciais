@@ -12,12 +12,10 @@ logger = app.logger
 logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
-
-
 @app.route("/escolas", methods=['GET'])
 def getEscolas():
 
-    conn = sqlite3.connect("escola.db")
+    conn = sqlite3.connect("ifpb.db")
 
     cursor = conn.cursor()
 
@@ -44,7 +42,7 @@ def getEscolas():
 @app.route("/escolas/<int:id>", methods=['GET'])
 def getEscolaByID(id):
 
-    conn = sqlite3.connect('escola.db')
+    conn = sqlite3.connect('ifpb.db')
 
     cursor = conn.cursor()
 
@@ -77,7 +75,7 @@ def setEscola():
     logradouro = escola['logradouro']
     cidade = escola['cidade']
 
-    conn = sqlite3.connect('escola.db')
+    conn = sqlite3.connect('ifpb.db')
 
     cursor = conn.cursor()
 
@@ -142,7 +140,7 @@ def updateEscola():
 @app.route("/alunos", methods=['GET'])
 def getAlunos():
 
-    conn = sqlite3.connect('escola.db')
+    conn = sqlite3.connect('ifpb.db')
 
     cursor = conn.cursor()
 
@@ -170,7 +168,7 @@ def getAlunos():
 @app.route("/alunos/<int:id>", methods=['GET'])
 def getAlunoByID(id):
 
-    conn = sqlite3.connect('escola.db')
+    conn = sqlite3.connect('ifpb.db')
 
     cursor = conn.cursor()
 
