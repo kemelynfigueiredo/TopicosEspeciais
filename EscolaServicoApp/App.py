@@ -17,32 +17,29 @@ logger.setLevel(logging.INFO)
 @app.route("/escolas", methods=['GET'])
 def getEscolas():
 
+    logger.info("Listando escolas.")
+
     conn = sqlite3.connect("escola.db")
 
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT * FROM TB_ESCOLAS;
+        SELECT * FROM tb_escola;
     """)
 
     escolas = []
     for linha in cursor.fetchall():
 
-    	escola = {
-    		"id_escola" : linha[0],
-    		"nome" : linha[1],
-    		"logradouro" : linha[2],
-    		"cidade" : linha[3]
-    	}
+        escolas.append(dict_factory(linha, cursor))
 
-    	escolas.append(escola)
+    conn.close()
 
-	conn.close()
-
-	return (jsonify(escolas))
+    return (jsonify(escolas))
 
 @app.route("/escolas/<int:id>", methods=['GET'])
 def getEscolaByID(id):
+
+    logger.info("Listando escolas pelo ID.")
 
     conn = sqlite3.connect('escola.db')
 
@@ -50,27 +47,23 @@ def getEscolaByID(id):
 
     cursor.execute("""
 
-        SELECT * FROM TB_ESCOLAS WHERE ID_ESCOLA = ?;
+        SELECT * FROM tb_escola WHERE id_escola = ?;
 
     """, (id, ))
 
 
     linha = cursor.fetchone()
-    escolas = []
-    escola = {
-    	"id_escola" : linha[0],
-		"nome" : linha[1],
-    	"logradouro" : linha[2],
-    	"cidade" : linha[3]
-    	}
-    escolas.append(escola)
+    escola = []
+    escola.append(dict_factory(linha,cursor))
 
     conn.close()
 
-    return (jsonify(escolas))
+    return (jsonify(escolaId))
 
 @app.route("/escola", methods=['POST'])
 def setEscola():
+
+    logger.info("Buscando dados da escola.")
 
     escola = request.get_json()
     nome = escola['nome']
@@ -83,7 +76,7 @@ def setEscola():
 
     cursor.execute("""
 
-        INSERT INTO TB_ESCOLAS(NOME, LOGRADOURO, CIDADE)
+        INSERT INTO tb_escola (nome, logradouro, cidade)
         VALUES(?,?,?);
 
     """, (nome, logradouro, cidade, ))
@@ -99,6 +92,8 @@ def setEscola():
 @app.route("/escolas/<int:id>", methods=['PUT'])
 def updateEscola():
 
+    logger.info("Atualizando dados da escola.")
+
     escola = request.get_json()
     nome = escola['nome']
     logradouro = escola['logradouro']
@@ -106,7 +101,7 @@ def updateEscola():
 
     cursor.execute("""
 
-        SELECT * FROM TB_ESCOLAS WHERE ID_ESCOLA = ?;
+        SELECT * FROM tb_escola WHERE id_escola = ?;
 
     """(id,))
 
@@ -116,7 +111,7 @@ def updateEscola():
 
         cursor.execute("""
 
-            UPDATE TB_ESCOLAS SET NOME=?, LOGRADOURO=?, CIDADE=? WHERE ID_ESCOLA=?;
+            UPDATE tb_escola SET nome=?, logradouro=?, cidade=? WHERE id_escola=?;
 
         """(nome, logradouro, cidade, id))
 
@@ -126,7 +121,7 @@ def updateEscola():
 
         cursor.execute("""
 
-            INSERT INTO TB_ESCOLAS(NOME, LOGRADOURO, CIDADE)
+            INSERT INTO tb_escola(nome, logradouro, cidade)
             VALUES(?,?,?)
 
         """(nome, logradouro, cidade))
@@ -142,26 +137,21 @@ def updateEscola():
 @app.route("/alunos", methods=['GET'])
 def getAlunos():
 
+    logger.info("Listando alunos.")
+
     conn = sqlite3.connect('escola.db')
 
     cursor = conn.cursor()
 
     cursor.execute("""
 
-        SELECT * FROM TB_ALUNOS;
+        SELECT * FROM tb_aluno;
 
     """)
 
     alunos = []
     for linha in cursor.fetchall():
-    	aluno = {
-    		"id_aluno" : linha[0],
-    		"nome" : linha[1],
-    		"matricula" : linha[2],
-    		"cpf" : linha[3],
-    		"nascimento" : linha[4]
-    	}
-        alunos.append(aluno)
+        alunos.append(dict_factory(linha,cursor))
 
     conn.close()
 
@@ -170,26 +160,21 @@ def getAlunos():
 @app.route("/alunos/<int:id>", methods=['GET'])
 def getAlunoByID(id):
 
+    logger.info("Listando alunos pelo ID.")
+
     conn = sqlite3.connect('escola.db')
 
     cursor = conn.cursor()
 
     cursor.execute("""
 
-        SELECT * FROM TB_ALUNOS WHERE ID_ALUNO = ?;
+        SELECT * FROM tb_aluno WHERE id_aluno=?;
 
     """, (id, ))
 
     linha = cursor.fetchone()
     alunos = []
-    aluno = {
-    	"id_aluno" : linha[0],
-    	"nome" : linha[1],
-    	"matricula" : linha[2],
-    	"cpf" : linha[3],
-    	"nascimento" : linha[4]
-    	}
-    alunos.append(aluno)
+    alunos.append(dict_factory(linha,cursor))
 
     conn.close()
 
@@ -198,19 +183,21 @@ def getAlunoByID(id):
 @app.route("/aluno", methods=['POST'])
 def setAlunos():
 
+    logger.info("Buscando dados dos alunos.")
+
     aluno = request.get_json()
     nome = aluno['nome']
     matricula = aluno['matricula']
     cpf = aluno['cpf']
     nascimento = aluno['nascimento']
 
-    conn = sqlite3.connect('ifpb.db')
+    conn = sqlite3.connect('escola.db')
 
     cursor = conn.cursor()
 
     cursor.execute("""
 
-        INSERT INTO TB_ALUNOS(NOME, MATRICULA, CPF, NASCIMENTO)
+        INSERT INTO tb_aluno(nome, matricula, cpf, nascimento)
         VALUES(?,?,?,?);
 
     """, (nome, matricula, cpf, nascimento, ))
@@ -226,69 +213,69 @@ def setAlunos():
 @app.route("/alunos/<int:id>", methods=["PUT"])
 def updateAluno():
 
-	aluno = request.get_json()
-	nome = aluno['nome']
-	matricula = aluno['matricula']
-	cpf = aluno['cpf']
-	nascimento = aluno['nascimento']
+    logger.info("Atualizando dados dos alunos.")
 
-	conn = sqlite3.connect('ifpb.db')
-	cursor = conn.cursor()
+    aluno = request.get_json()
+    nome = aluno['nome']
+    matricula = aluno['matricula']
+    cpf = aluno['cpf']
+    nascimento = aluno['nascimento']
 
-	cursor.execute("""
+    conn = sqlite3.connect('escola.db')
+    cursor = conn.cursor()
 
-		SELECT * FROM TB_ALUNOS WHERE ID_ALUNO = ?;
+    cursor.execute("""
 
-	"""(id,))
+        SELECT * FROM tb_aluno WHERE id_aluno=?;
 
-	data = cursor.fetchone()
+    """(id,))
 
-	if data is not None:
+    data = cursor.fetchone()
 
-		cursor.execute("""
+    if data is not None:
 
-			UPDATE TB_ALUNOS SET NOME = ?, MATRICULA = ?, CPF = ?, NASCIMENTO = ? WHERE ID_ALUNO = ?;
-		"""(nome, matricula, cpf, nascimento, id))
+        cursor.execute("""
 
-		conn.commit()
+            UPDATE tb_aluno SET nome = ?, matricula = ?, cpf = ?, nascimento = ? WHERE id_aluno = ?;
 
-	else:
+        """(nome, matricula, cpf, nascimento, id))
 
-		cursor.execute("""
+        conn.commit()
 
-			INSERT INTO TB_ALUNOS(NOME, MATRICULA, CPF, NASCIMENTO)
+    else:
+
+        cursor.execute("""
+
+            INSERT INTO tb_aluno(nome, matricula, cpf, nascimento)
 			VALUES(?,?,?,?)
 
-		"""(nome, matricula, cpf, nascimento))
+        """(nome, matricula, cpf, nascimento))
 
-		conn.commit()
-		id = cursor.lastrowid
-		aluno['id_aluno'] = id
+        conn.commit()
+        id = cursor.lastrowid
+        aluno['id_aluno']= id
 
-	conn.close()
-
-	return jsonify(aluno)
+    conn.close()
+    return (jsonify(aluno))
+    
 
 @app.route("/cursos", methods=['GET'])
 def getCursos():
 
-    conn = sqlite3.connect('ifpb.db')
+    logger.info("Listando cursos.")
+
+    conn = sqlite3.connect('escola.db')
 
     cursor = conn.cursor()
 
     cursor.execute("""
 
-        SELECT * FROM TB_CURSOS;
+        SELECT * FROM tb_curso;
 
     """)
 
     cursos = []
     for linha in cursor.fetchall():
-    	curso = {
-    		"id_curso" : linha [0],
-    		"nome" : linha[1],
-    		"turna" : linha[2]
-    	}
         cursos.append(curso)
 
     conn.close()
@@ -298,24 +285,20 @@ def getCursos():
 @app.route("/cursos/<int:id>", methods=['GET'])
 def getCursoByID(id):
 
-    conn = sqlite3.connect('ifpb.db')
+    logger.info("Listando cursos pelo ID.")
 
+    conn = sqlite3.connect('escola.db')
     cursor = conn.cursor()
 
     cursor.execute("""
 
-        SELECT * FROM TB_CURSOS WHERE ID_CURSO = ?;
+        SELECT * FROM tb_curso WHERE id_curso = ?;
 
     """, (id, ))
 
     linha = cursor.fetchone()
     cursos = []
-    curso = {
-    	"id_curso" : linha [0],
-    	"nome" : linha[1],
-    	"turna" : linha[2]
-    	}
-    cursos.append(curso)
+    cursos.append(dict_factory(linha,cursor))
 
     conn.close()
 
@@ -324,17 +307,19 @@ def getCursoByID(id):
 @app.route("/curso", methods=['POST'])
 def setCursos():
 
+    logger.info("Buscando dados dos cursos.")
+
     curso = request.get_json()
     nome = curso['nome']
     turno = curso['turno']
 
-    conn = sqlite3.connect('ifpb.db')
+    conn = sqlite3.connect('escola.db')
 
     cursor = conn.cursor()
 
     cursor.execute("""
 
-        INSERT INTO TB_CURSOS(NOME, TURNO)
+        INSERT INTO tb_cursoS(nome, turno)
         VALUES(?, ?);
 
     """, (nome, turno, ))
@@ -343,35 +328,39 @@ def setCursos():
     conn.close()
 
     id = cursor.lastrowid
-    curso['ID_CURSO'] = id
+    curso['id_curso'] = id
 
     return (jsonify(curso))
 
 @app.route("/cursos/<int:id>, methods=['PUT']")
 def updateCurso():
+
+    logger.info("Atualizando dados dos cursos.")
+
     curso = request.get_json()
     nome = curso['nome']
     turno = curso['turno']
-    conn = sqlite3.connect('ifpb.db')
+
+    conn = sqlite3.connect('escola.db')
 
     cursor = conn.cursor()
 
     cursor.execute("""
-    	SELECT * FROM TB_CURSOS WHERE ID_CURSO = ?;
+    	SELECT * FROM tb_curso WHERE id_curso = ?;
     """(id,))
 
     data = cursor.fetchone()
 
     if data is not None:
         cursor.execute("""
-        	UPDATE TB_CURSOS SET NOME=?, TURNO=? WHERE ID_CURSO = ?;
+        	UPDATE tb_curso SET nome=?, turno=? WHERE id_curso = ?;
         """(nome, turno, id))
 
         conn.commit()
 
     else:
         cursor.execute("""
-        	INSERT INTO TB_CURSOS(NOME, TURNO) VALUES(?,?)
+        	INSERT INTO tb_curso(nome, turno) VALUES(?,?)
         """(nome, turno))
         conn.commit()
         id = cursor.lastrowid
@@ -384,26 +373,21 @@ def updateCurso():
 @app.route("/turmas", methods=['GET'])
 def getTurmas():
 
-    conn = sqlite3.connect('ifpb.db')
+    logger.info("Listando turmas.")
+
+    conn = sqlite3.connect('escola.db')
 
     cursor = conn.cursor()
 
     cursor.execute("""
 
-        SELECT * FROM TB_TURMAS;
+        SELECT * FROM tb_turma;
 
     """)
 
     turmas = []
     for linha in cursor.fetchall():
-    	turma = {
-
-    		"id_turma" : linha[0],
-    		"nome" : linha[1],
-    		"curso" : linha[2]
-
-    	}
-        turmas.append(turma)
+        turmas.append(dict_factory(linha,cursor))
 
     conn.close()
 
@@ -412,26 +396,21 @@ def getTurmas():
 @app.route("/turmas/<int:id>", methods=['GET'])
 def getTurmaByID(id):
 
-    conn = sqlite3.connect('ifpb.db')
+    logger.info("Listando turmas pelo ID.")
+
+    conn = sqlite3.connect('escola.db')
 
     cursor = conn.cursor()
 
     cursor.execute("""
 
-        SELECT * FROM TB_TURMAS WHERE ID_TURMA = ?;
+        SELECT * FROM tb_turma WHERE id_turma = ?;
 
     """, (id, ))
 
     linha = cursor.fetchone()
     turmas = []
-    turma = {
-
-    	"id_turma" : linha[0],
-    	"nome" : linha[1],
-    	"curso" : linha[2]
-
-    	}
-    turmas.append(turma)
+    turmas.append(dict_factory(linha, cursor))
 
     conn.close()
 
@@ -440,18 +419,20 @@ def getTurmaByID(id):
 @app.route("/turma", methods=['POST'])
 def setTurmas():
 
+    logger.info("Buscando dados das turmas.")
+
 
     turma = request.get_json()
     nome = turma['nome']
     curso = turma['curso']
 
-    conn = sqlite3.connect('ifpb.db')
+    conn = sqlite3.connect('escola.db')
 
     cursor = conn.cursor()
 
     cursor.execute("""
 
-        INSERT INTO TB_TURMAS(NOME, CURSO)
+        INSERT INTO tb_turma(nome, curso)
         VALUES(?, ?);
 
     """, (nome, curso, ))
@@ -467,17 +448,18 @@ def setTurmas():
 @app.route("/turmas/<int:id>, methods=['PUT']")
 def updateTurma():
 
-    turma = request.get_json()
+    logger.info("Atualizando dados das turmas.")
 
+    turma = request.get_json()
     nome = turma['nome']
     curso = turma['curso']
 
-    conn = sqlite3.connect('ifpb.db')
+    conn = sqlite3.connect('escola.db')
     cursor = conn.cursor()
 
     cursor.execute("""
 
-        SELECT * FROM TB_TURMAS WHERE ID_TURMA = ?;
+        SELECT * FROM tb_turma WHERE id_turma = ?;
 
         """(id,))
 
@@ -486,7 +468,7 @@ def updateTurma():
     if data is not None:
 
         cursor.execute("""
-            UPDATE TB_TURMAS SET NOME=?, CURSO=? WHERE  = ?;
+            UPDATE tb_turma SET nome=?, curso=? WHERE  = ?;
         """(nome, curso, id))
 
         conn.commit()
@@ -495,7 +477,7 @@ def updateTurma():
 
         cursor.execute("""
 
-            INSERT INTO TB_TURMAS(NOME, CURSO)
+            INSERT INTO tb_turma(nome, curso)
             VALUES(?,?)
 
         """(nome, curso))
@@ -513,23 +495,21 @@ def updateTurma():
 @app.route("/disciplinas", methods=['GET'])
 def getDisciplinas():
 
-    conn = sqlite3.connect('ifpb.db')
+    logger.info("Listando disciplinas.")
+
+    conn = sqlite3.connect('escola.db')
 
     cursor = conn.cursor()
 
     cursor.execute("""
 
-        SELECT * FROM TB_DISCIPLINAS;
+        SELECT * FROM tb_disciplina;
 
     """)
 
     disciplinas = []
     for linha in cursor.fetchall():
-    	disciplina = {
-    		"id_disciplina" : linha[0],
-    		"nome" : linha[1]
-    	}
-        disciplinas.append(disciplina)
+        disciplinas.append(dict_factory(linha, cursor))
 
     conn.close()
 
@@ -538,23 +518,21 @@ def getDisciplinas():
 @app.route("/disciplinas/<int:id>", methods=['GET'])
 def getDisciplinaByID(id):
 
-    conn = sqlite3.connect('ifpb.db')
+    logger.info("Listando disciplinas pelo ID.")
+
+    conn = sqlite3.connect('escola.db')
 
     cursor = conn.cursor()
 
     cursor.execute("""
 
-        SELECT * FROM TB_DISCIPLINAS WHERE ID_DISCIPLINA = ?;
+        SELECT * FROM tb_disciplina WHERE id_disciplina = ?;
 
     """, (id, ))
 
     linha = cursor.fetchone()
     disciplinas = []
-    disciplina = {
-    	"id_disciplina" : linha[0],
-    	"nome" : linha[1]
-    	}
-    disciplinas.append(disciplina)
+    disciplinas.append(dict_factory(linha,cursor))
 
     conn.close()
 
@@ -563,16 +541,18 @@ def getDisciplinaByID(id):
 @app.route("/disciplina", methods=['POST'])
 def setDisciplinas():
 
+    logger.info("Buscando dados das disciplinas.")
+
     disciplina = request.get_json()
     nome = disciplina['nome']
 
-    conn = sqlite3.connect('ifpb.db')
+    conn = sqlite3.connect('escola.db')
 
     cursor = conn.cursor()
 
     cursor.execute("""
 
-        INSERT INTO TB_DISCIPLINAS(NOME)
+        INSERT INTO tb_disciplina(nome)
         VALUES(?);
 
     """, (nome, ))
@@ -588,15 +568,17 @@ def setDisciplinas():
 @app.route("/disciplinas/<int:id>, methods=['PUT']")
 def updateDisciplina():
 
+    logger.info("Atualizando dados das disciplinas.")
+
     disciplina = request.get_json()
     nome = disciplina['nome']
 
-    conn = sqlite3.connect('ifpb.db')
+    conn = sqlite3.connect('escola.db')
     cursor = conn.cursor()
 
     cursor.execute("""
 
-        SELECT * FROM TB_DISCIPLINAS WHERE ID_DISCIPLINA = ?;
+        SELECT * FROM tb_disciplina WHERE id_disciplina = ?;
 
     """(id,))
 
@@ -606,7 +588,7 @@ def updateDisciplina():
 
         cursor.execute("""
 
-            UPDATE TB_DISCIPLINAS SET NOME=? WHERE ID_DISCIPLINA = ?;
+            UPDATE tb_disciplina SET nome=? WHERE id_disciplina = ?;
 
         """(nome, ))
 
@@ -616,7 +598,7 @@ def updateDisciplina():
 
         cursor.execute("""
 
-            INSERT INTO TB_DISCIPLINAS(NOME)
+            INSERT INTO tb_disciplina(nome)
             VALUES(?)
 
         """(nome, ))
@@ -628,6 +610,24 @@ def updateDisciplina():
     conn.close()
 
     return jsonify()
+
+
+def dict_factory(linha, cursor):
+    dicionario = {}
+    for idx, col in enumerate(cursor.description):
+        dicionario[col[0]] = linha[idx]
+    return dicionario
+
+@app.errorhandler(404)
+def not_found(error=None):
+    message = {
+            'status': 404,
+            'message': 'Not Found: ' + request.url,
+    }
+    resp = jsonify(message)
+    resp.status_code = 404
+
+    return resp
 
 if(__name__ == '__main__'):
     app.run(host='0.0.0.0', debug=True, use_reloader=True)
