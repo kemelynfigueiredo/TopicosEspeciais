@@ -257,7 +257,7 @@ def updateAluno():
 
     conn.close()
     return (jsonify(aluno))
-    
+
 
 @app.route("/cursos", methods=['GET'])
 def getCursos():
