@@ -177,7 +177,7 @@ def setEndereco():
     id = cursor.lastrowid
     endereco["id_endereco"] = id
 
-    return jsonify(endereco)
+    return jsonify(enderecoJson)
 
 @app.route("/endereco/<int:id>", methods=['PUT'])
 def updateEndereco():
@@ -311,7 +311,7 @@ def setCampus():
     id = cursor.lastrowid
     campus["id_campus"] = id
 
-    return jsonify(campus)
+    return jsonify(campusjson)
 
 @app.route("/campus/<int:id>", methods=['PUT'])
 def updateCampus():
@@ -444,7 +444,7 @@ def setEscola():
     id = cursor.lastrowid
     escola["id_escola"] = id
 
-    return jsonify(escola)
+    return jsonify(escolaJson)
 
 @app.route("/escolas/<int:id>", methods=['PUT'])
 def updateEscola():
@@ -576,7 +576,7 @@ def setTurno():
     id = cursor.lastrowid
     turno["id_turno"] = id
 
-    return jsonify(turno)
+    return jsonify(turnoJson)
 
 @app.route("/turnos/<int:id>", methods=['PUT'])
 def updateTurno():
@@ -708,7 +708,7 @@ def setCurso():
     id = cursor.lastrowid
     curso["id_curso"] = id
 
-    return jsonify(curso)
+    return jsonify(cursoJson)
 
 @app.route("/cursos/<int:id>", methods=['PUT'])
 def updateCurso():
@@ -845,7 +845,7 @@ def setAluno():
     id = cursor.lastrowid
     aluno["id_aluno"] = id
 
-    return jsonify(aluno)
+    return jsonify(alunoJson)
 
 @app.route("/alunos/<int:id>", methods=['PUT'])
 def updateAluno():
@@ -981,7 +981,7 @@ def setTurma():
     id = cursor.lastrowid
     turma["id_turma"] = id
 
-    return jsonify(turma)
+    return jsonify(turmaJson)
 
 @app.route("/turmas/<int:id>", methods=['PUT'])
 def updateTurma():
@@ -1115,7 +1115,7 @@ def setProfessor():
     id = cursor.lastrowid
     professor["id_professor"] = id
 
-    return jsonify(professor)
+    return jsonify(professorJson)
 
 @app.route("/professores/<int:id>", methods=['PUT'])
 def updateProfessor():
@@ -1249,7 +1249,7 @@ def setDisciplina():
     id = cursor.lastrowid
     disciplina["id_disciplina"] = id
 
-    return jsonify(disciplina)
+    return jsonify(disciplinaJson)
 
 @app.route("/disciplinas/<int:id>", methods=['PUT'])
 def updateDisciplina():
