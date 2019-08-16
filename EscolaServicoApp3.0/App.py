@@ -158,7 +158,7 @@ def setEndereco():
     bairro = enderecoJson['bairro']
     cep = enderecoJson['cep']
     numero = enderecoJson['numero']
-    endereco = Endereco(logradouro, complemento, bairro, cep, numero)
+
 
     try:
         conn = sqlite3.connect('EscolaApp_versao2.db')
@@ -175,7 +175,7 @@ def setEndereco():
         logger.error(sqlite3.Error)
 
     id = cursor.lastrowid
-    endereco["id"] = id
+    endereco["id_endereco"] = id
 
     return jsonify(endereco)
 
