@@ -21,7 +21,7 @@ endereco_schema = {
     'complemento':{'type':'string'},
     'bairro':{'type':'string'},
     'cep':{'type':'string'},
-    "numero":{'type':"string"}
+    "numero":{'type':'string'}
     }
 }
 
@@ -38,8 +38,8 @@ escola_schema = {
     'required': ['nome', 'fk_id_endereco', 'fk_id_campus'],
     'properties':{
     'nome':{'type':'string'},
-    'fk_id_endereco':{'type':'int'},
-    'fk_id_campus':{'type':'int'}
+    'fk_id_endereco':{'type':'string'},
+    'fk_id_campus':{'type':'string'}
     }
 }
 
@@ -54,7 +54,7 @@ curso_schema = {
     'required':['nome', 'fk_id_turno'],
     'properties':{
     'nome':{'type':'string'},
-    'fk_id_turno':{'type':'int'}
+    'fk_id_turno':{'type':'string'}
     }
 }
 
@@ -65,8 +65,8 @@ aluno_schema = {
     'matricula':{'type':'string'},
     'cpf':{'type':'string'},
     'nascimento':{'type':'string'},
-    'fk_id_endereco':{'type':'int'},
-    'fk_id_curso':{'type':'int'}
+    'fk_id_endereco':{'type':'string'},
+    'fk_id_curso':{'type':'string'}
     }
 }
 
@@ -74,7 +74,7 @@ turma_schema = {
     'required': ['nome','fk_id_curso'],
     'properties':{
     'nome':{'type':'string'},
-    'fk_id_curso':{'type':'int'}
+    'fk_id_curso':{'type':'string'}
     }
 }
 
@@ -82,7 +82,7 @@ professor_schema ={
     'required': ['nome','fk_id_endereco'],
     'properties':{
     'nome':{'type':'string'},
-    'fk_id_endereco':{'type':'int'}
+    'fk_id_endereco':{'type':'string'}
     }
 }
 
@@ -90,7 +90,7 @@ disciplina_schema = {
     'required':['nome','fk_id_endereco'],
     'properties':{
     'nome':{'type':'string'},
-    'fk_id_endereco':{'type':'int'}
+    'fk_id_endereco':{'type':'string'}
     }
 }
 
@@ -175,7 +175,7 @@ def setEndereco():
         logger.error(sqlite3.Error)
 
     id = cursor.lastrowid
-    endereco["id_endereco"] = id
+    enderecoJson["id_endereco"] = id
 
     return jsonify(enderecoJson)
 
@@ -292,7 +292,6 @@ def setCampus():
     campusJson = request.get_json()
     sigla = campusJson['sigla']
     cidade = campusJson['cidade']
-    campus = Campus(sigla, cidade)
 
     try:
         conn = sqlite3.connect('EscolaApp_versao2.db')
@@ -309,9 +308,9 @@ def setCampus():
         logger.error(sqlite3.Error)
 
     id = cursor.lastrowid
-    campus["id_campus"] = id
+    campusJson["id_campus"] = id
 
-    return jsonify(campusjson)
+    return jsonify(campusJson)
 
 @app.route("/campus/<int:id>", methods=['PUT'])
 def updateCampus():
@@ -321,7 +320,7 @@ def updateCampus():
     campusJson = request.get_json()
     sigla = campusJson['sigla']
     cidade = campusJson['cidade']
-    campus = Campus(sigla, cidade)
+
     try:
         conn = sqlite3.connect('EscolaApp_versao2.db')
         cursor = conn.cursor()
@@ -425,7 +424,6 @@ def setEscola():
     nome = escolaJson['nome']
     fk_id_endereco = escolaJson['fk_id_endereco']
     fk_id_campus = escolaJson['fk_id_campus']
-    escola = Escola(nome, fk_id_endereco, fk_id_campus)
 
     try:
         conn = sqlite3.connect('EscolaApp_versao2.db')
@@ -442,7 +440,7 @@ def setEscola():
         logger.error(sqlite3.Error)
 
     id = cursor.lastrowid
-    escola["id_escola"] = id
+    escolaJson["id_escola"] = id
 
     return jsonify(escolaJson)
 
@@ -455,7 +453,7 @@ def updateEscola():
     nome = escolaJson['nome']
     fk_id_endereco = escolaJson['fk_id_endereco']
     fk_id_campus = escolaJson['fk_id_campus']
-    escola = Escola(nome, fk_id_endereco, fk_id_campus)
+
     try:
         conn = sqlite3.connect('EscolaApp_versao2.db')
         cursor = conn.cursor()
@@ -557,7 +555,6 @@ def setTurno():
 
     turnoJson = request.get_json()
     nome = turnoJson['nome']
-    turno = Turno(nome)
 
     try:
         conn = sqlite3.connect('EscolaApp_versao2.db')
@@ -574,7 +571,7 @@ def setTurno():
         logger.error(sqlite3.Error)
 
     id = cursor.lastrowid
-    turno["id_turno"] = id
+    turnoJson["id_turno"] = id
 
     return jsonify(turnoJson)
 
@@ -689,7 +686,6 @@ def setCurso():
     nome = cursoJson['nome']
     fk_id_turno = cursoJson['fk_id_endereco']
 
-    curso = Curso(nome, fk_id_turno)
 
     try:
         conn = sqlite3.connect('EscolaApp_versao2.db')
@@ -706,7 +702,7 @@ def setCurso():
         logger.error(sqlite3.Error)
 
     id = cursor.lastrowid
-    curso["id_curso"] = id
+    cursoJson["id_curso"] = id
 
     return jsonify(cursoJson)
 
@@ -826,7 +822,6 @@ def setAluno():
     fk_id_endereco = alunoJson['fk_id_endereco']
     fk_id_curso = alunoJson['fk_id_curso']
 
-    aluno = Aluno(nome, matricula, cpf, nascimento, fk_id_endereco, fk_id_curso)
 
     try:
         conn = sqlite3.connect('EscolaApp_versao2.db')
@@ -843,7 +838,7 @@ def setAluno():
         logger.error(sqlite3.Error)
 
     id = cursor.lastrowid
-    aluno["id_aluno"] = id
+    alunoJson["id_aluno"] = id
 
     return jsonify(alunoJson)
 
@@ -891,7 +886,7 @@ def updateAluno():
 
             conn.commit()
             id = cursor.lastrowid
-            aluno['id_aluno']= id
+            alunoJson['id_aluno']= id
 
         conn.close()
     except(sqlite3.Error):
@@ -962,7 +957,6 @@ def setTurma():
     nome = turmaJson['nome']
     fk_id_curso = turmaJson['fk_id_curso']
 
-    turma = Turma(nome, fk_id_curso)
 
     try:
         conn = sqlite3.connect('EscolaApp_versao2.db')
@@ -979,7 +973,7 @@ def setTurma():
         logger.error(sqlite3.Error)
 
     id = cursor.lastrowid
-    turma["id_turma"] = id
+    turmaJson["id_turma"] = id
 
     return jsonify(turmaJson)
 
@@ -1023,7 +1017,7 @@ def updateTurma():
 
             conn.commit()
             id = cursor.lastrowid
-            turma['id_turma']= id
+            turmaJson['id_turma']= id
 
         conn.close()
     except(sqlite3.Error):
@@ -1096,8 +1090,6 @@ def setProfessor():
     fk_id_endereco = professorJson['fk_id_endereco']
 
 
-    professor = Professor(nome, fk_id_endereco)
-
     try:
         conn = sqlite3.connect('EscolaApp_versao2.db')
         cursor = conn.cursor()
@@ -1113,7 +1105,7 @@ def setProfessor():
         logger.error(sqlite3.Error)
 
     id = cursor.lastrowid
-    professor["id_professor"] = id
+    professorJson["id_professor"] = id
 
     return jsonify(professorJson)
 
@@ -1225,12 +1217,10 @@ def setDisciplina():
 
     logger.info("Buscando dados da disciplina.")
 
-    dsiciplinaJson = request.get_json()
+    disciplinaJson = request.get_json()
     nome = disciplinaJson['nome']
     fk_id_professor = disciplinaJson['fk_id_professor']
 
-
-    disciplina = Disciplina(nome, fk_id_professor)
 
     try:
         conn = sqlite3.connect('EscolaApp_versao2.db')
@@ -1247,7 +1237,7 @@ def setDisciplina():
         logger.error(sqlite3.Error)
 
     id = cursor.lastrowid
-    disciplina["id_disciplina"] = id
+    disciplinaJson["id_disciplina"] = id
 
     return jsonify(disciplinaJson)
 
@@ -1292,7 +1282,7 @@ def updateDisciplina():
 
             conn.commit()
             id = cursor.lastrowid
-            dsiciplina['id_disciplina']= id
+            disciplinaJson['id_disciplina']= id
 
         conn.close()
     except(sqlite3.Error):
